@@ -1,10 +1,13 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GameHub - Multi-Game WebApp</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -17,12 +20,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
             line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            min-height: 100vh;
         }
 
         /* Navigation */
@@ -36,23 +34,10 @@
             transition: all 0.3s ease;
         }
 
-        nav .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 20px;
-        }
-
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
             color: white;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
         }
 
         .nav-links a {
@@ -61,31 +46,20 @@
             font-weight: 500;
             transition: all 0.3s ease;
             cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
         }
 
         .nav-links a:hover {
             color: #ffd700;
-            transform: translateY(-2px);
-        }
-
-        .mobile-menu {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-        }
-
-        .mobile-menu span {
-            width: 25px;
-            height: 3px;
-            background: white;
-            margin: 3px 0;
-            transition: 0.3s;
+            background: rgba(255, 255, 255, 0.2);
         }
 
         /* Main Content */
         main {
             margin-top: 80px;
             min-height: calc(100vh - 80px);
+            padding-bottom: 2rem;
         }
 
         .section {
@@ -116,7 +90,7 @@
             opacity: 0.9;
         }
 
-        .btn {
+        .btn-custom {
             display: inline-block;
             padding: 12px 30px;
             background: linear-gradient(45deg, #ffd700, #ff6b6b);
@@ -130,7 +104,7 @@
             font-size: 1rem;
         }
 
-        .btn:hover {
+        .btn-custom:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
@@ -151,6 +125,10 @@
             text-align: center;
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .game-card:hover {
@@ -180,15 +158,12 @@
             border-radius: 20px;
             padding: 2rem;
             margin: 2rem auto;
-            /* Centering the game container */
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             max-width: fit-content;
-            /* Allow content to dictate width */
+            width: 100%;
             display: flex;
-            /* Use flexbox for inner centering */
             flex-direction: column;
             align-items: center;
-            /* Center items horizontally */
         }
 
         .game-header {
@@ -197,7 +172,7 @@
             align-items: center;
             margin-bottom: 2rem;
             width: 100%;
-            /* Ensure header spans full width */
+            flex-wrap: wrap;
         }
 
         .back-btn {
@@ -209,6 +184,7 @@
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s ease;
+            margin-top: 10px;
         }
 
         .back-btn:hover {
@@ -237,32 +213,6 @@
             margin: 0 auto;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 1rem;
-        }
-
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
         /* Game Styles */
         .game-board {
             display: grid;
@@ -272,8 +222,8 @@
         }
 
         .tic-tac-toe {
-            grid-template-columns: repeat(3, 80px);
-            grid-template-rows: repeat(3, 80px);
+            grid-template-columns: repeat(3, minmax(60px, 80px));
+            grid-template-rows: repeat(3, minmax(60px, 80px));
         }
 
         .tic-cell {
@@ -297,34 +247,26 @@
             background: #000;
             border: 2px solid #333;
             display: block;
-            /* Ensure canvas is a block element for margin:auto to work */
             margin: 0 auto;
-            /* Center the snake game canvas */
+            max-width: 100%;
         }
 
         .memory-grid {
-            grid-template-columns: repeat(4, 80px);
+            grid-template-columns: repeat(4, minmax(60px, 80px));
             gap: 10px;
         }
 
         .memory-card {
-            width: 80px;
-            height: 80px;
+            width: 100%;
+            height: 0;
+            padding-bottom: 100%;
             background: #007bff;
             border-radius: 10px;
             cursor: pointer;
             transform: rotateY(0deg);
             transition: transform 0.4s ease;
-            /* For flip animation */
             transform-style: preserve-3d;
-            /* For flip animation */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
             position: relative;
-            /* For inner card content */
         }
 
         .memory-card .card-inner {
@@ -340,15 +282,12 @@
             transform: rotateY(180deg);
         }
 
-
-
         .memory-card .card-front,
         .memory-card .card-back {
             position: absolute;
             width: 100%;
             height: 100%;
             -webkit-backface-visibility: hidden;
-            /* Safari */
             backface-visibility: hidden;
             display: flex;
             align-items: center;
@@ -366,7 +305,6 @@
             color: white;
             transform: rotateY(180deg);
         }
-
 
         .game-info {
             text-align: center;
@@ -403,11 +341,12 @@
             text-align: center;
             margin: 2rem 0;
             letter-spacing: 0.5rem;
+            word-wrap: break-word;
         }
 
         .alphabet {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
             gap: 10px;
             max-width: 400px;
             margin: 0 auto;
@@ -422,6 +361,7 @@
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s ease;
+            min-width: 40px;
         }
 
         .letter-btn:hover {
@@ -462,17 +402,15 @@
         }
 
         .slider-puzzle {
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
+            grid-template-columns: repeat(3, minmax(80px, 100px));
+            grid-template-rows: repeat(3, minmax(80px, 100px));
             background: #f8f9fa;
             border: 2px solid #dee2e6;
             border-radius: 10px;
             padding: 5px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             justify-content: center;
-            /* Center the grid itself */
             margin: 0 auto;
-            /* Center the grid container */
             max-width: fit-content;
         }
 
@@ -501,8 +439,8 @@
         }
 
         .whack-grid {
-            grid-template-columns: repeat(3, 120px);
-            grid-template-rows: repeat(3, 120px);
+            grid-template-columns: repeat(3, minmax(80px, 120px));
+            grid-template-rows: repeat(3, minmax(80px, 120px));
             gap: 15px;
         }
 
@@ -517,10 +455,9 @@
             font-size: 3rem;
             position: relative;
             overflow: hidden;
-        }
-
-        .mole-hole:hover {
-            transform: scale(1.05);
+            width: 100%;
+            height: 0;
+            padding-bottom: 100%;
         }
 
         .mole {
@@ -543,7 +480,7 @@
         /* Number Guessing Keyboard */
         .number-keyboard {
             display: grid;
-            grid-template-columns: repeat(3, 70px);
+            grid-template-columns: repeat(3, minmax(50px, 70px));
             gap: 10px;
             margin-top: 1rem;
             justify-content: center;
@@ -569,126 +506,184 @@
             margin: 0 auto;
             background: #eee;
             border: 2px solid #333;
+            max-width: 100%;
         }
 
+        /* Mobile Styles */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .content-section {
+                padding: 2rem;
+            }
+        }
 
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            .mobile-menu {
-                display: flex;
-            }
-
             .hero h1 {
                 font-size: 2rem;
             }
-
-            .games-grid {
-                grid-template-columns: 1fr;
+            
+            .hero p {
+                font-size: 1rem;
             }
-
+            
+            .content-section {
+                padding: 1.5rem;
+            }
+            
             .game-card {
                 padding: 1.5rem;
             }
+            
+            .game-container {
+                padding: 1.5rem;
+            }
+            
+            .game-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .game-header h2 {
+                margin-bottom: 1rem;
+            }
+            
+            .whack-grid {
+                grid-template-columns: repeat(3, minmax(60px, 1fr));
+                grid-template-rows: repeat(3, minmax(60px, 1fr));
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero {
+                padding: 3rem 0;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .memory-grid {
+                grid-template-columns: repeat(4, minmax(50px, 1fr));
+            }
+            
+            .slider-puzzle {
+                grid-template-columns: repeat(3, minmax(60px, 1fr));
+                grid-template-rows: repeat(3, minmax(60px, 1fr));
+            }
+            
+            .tic-tac-toe {
+                grid-template-columns: repeat(3, minmax(50px, 1fr));
+                grid-template-rows: repeat(3, minmax(50px, 1fr));
+            }
+            
+            .content-section h2 {
+                font-size: 2rem;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <nav>
+    <!-- Bootstrap Navbar -->
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <div class="logo">🎮 GameHub</div>
-            <ul class="nav-links">
-                <li><a onclick="showSection('home')">Home</a></li>
-                <li><a onclick="showSection('games')">Games</a></li>
-                <li><a onclick="showSection('about')">About</a></li>
-                <li><a onclick="showSection('contact')">Contact</a></li>
-            </ul>
-            <div class="mobile-menu">
-                <span></span>
-                <span></span>
-                <span></span>
+            <a class="navbar-brand logo" href="#">🎮 GameHub</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto nav-links">
+                    <li class="nav-item"><a class="nav-link" onclick="showSection('home')">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="showSection('games')">Games</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="showSection('about')">About</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="showSection('contact')">Contact</a></li>
+                </ul>
             </div>
         </div>
     </nav>
 
-    <main>
+    <main class="container-fluid">
         <section id="home" class="section active">
             <div class="hero">
-                <div class="container">
-                    <h1>Welcome to GameHub</h1>
-                    <p>Your ultimate destination for fun and engaging games! Play 10 different games all in one place.
-                    </p>
-                    <button class="btn" onclick="showSection('games')">🎮 Start Playing</button>
+                <div class="container text-center">
+                    <h1 class="display-4">Welcome to GameHub</h1>
+                    <p class="lead">Your ultimate destination for fun and engaging games! Play 10 different games all in one place.</p>
+                    <button class="btn btn-custom" onclick="showSection('games')">🎮 Start Playing</button>
                 </div>
             </div>
         </section>
 
         <section id="games" class="section">
             <div class="container">
-                <h2 style="text-align: center; color: white; margin-bottom: 2rem; font-size: 2.5rem;">Choose Your Game
-                </h2>
+                <h2 class="text-center text-white mb-4 display-5">Choose Your Game</h2>
                 <div class="games-grid">
                     <div class="game-card">
                         <div class="game-icon">⭕</div>
                         <h3>Tic Tac Toe</h3>
                         <p>Classic strategy game for two players</p>
-                        <button class="btn" onclick="startGame('tic-tac-toe')">Play Now</button>
+                        <button class="btn btn-custom" onclick="startGame('tic-tac-toe')">Play Now</button>
                     </div>
                     <div class="game-card">
                         <div class="game-icon">🐍</div>
                         <h3>Snake Game</h3>
                         <p>Control the snake and collect food</p>
-                        <button class="btn" onclick="startGame('snake')">Play Now</button>
+                        <button class="btn btn-custom" onclick="startGame('snake')">Play Now</button>
                     </div>
                     <div class="game-card">
                         <div class="game-icon">🧠</div>
                         <h3>Memory Game</h3>
                         <p>Test your memory with card matching</p>
-                        <button class="btn" onclick="startGame('memory')">Play Now</button>
+                        <button class="btn btn-custom" onclick="startGame('memory')">Play Now</button>
                     </div>
                     <div class="game-card">
                         <div class="game-icon">✂️</div>
                         <h3>Rock Paper Scissors</h3>
                         <p>Classic hand game against computer</p>
-                        <button class="btn" onclick="startGame('rps')">Play Now</button>
+                        <button class="btn btn-custom" onclick="startGame('rps')">Play Now</button>
                     </div>
                     <div class="game-card">
                         <div class="game-icon">🔨</div>
                         <h3>Whack-a-Mole</h3>
                         <p>Quick reflexes game - whack the moles!</p>
-                        <button class="btn" onclick="startGame('whack')">Play Now</button>
+                        <button class="btn btn-custom" onclick="startGame('whack')">Play Now</button>
                     </div>
                     <div class="game-card">
                         <div class="game-icon">🔢</div>
                         <h3>Number Guessing</h3>
                         <p>Guess the secret number</p>
-                        <button class="btn" onclick="startGame('number')">Play Now</button>
+                        <button class="btn btn-custom" onclick="startGame('number')">Play Now</button>
                     </div>
                     <div class="game-card">
                         <div class="game-icon">🎪</div>
                         <h3>Hangman</h3>
                         <p>Guess the word letter by letter</p>
-                        <button class="btn" onclick="startGame('hangman')">Play Now</button>
+                        <button class="btn btn-custom" onclick="startGame('hangman')">Play Now</button>
                     </div>
                     <div class="game-card">
                         <div class="game-icon">🧩</div>
                         <h3>Puzzle Slider</h3>
                         <p>Slide tiles to solve the puzzle</p>
-                        <button class="btn" onclick="startGame('slider')">Play Now</button>
+                        <button class="btn btn-custom" onclick="startGame('slider')">Play Now</button>
                     </div>
                     <div class="game-card">
                         <div class="game-icon">🏓</div>
                         <h3>Breakout</h3>
                         <p>Classic brick-breaking game</p>
-                        <button class="btn" onclick="startGame('breakout')">Play Now</button>
+                        <button class="btn btn-custom" onclick="startGame('breakout')">Play Now</button>
                     </div>
                     <div class="game-card">
                         <div class="game-icon">❓</div>
                         <h3>Quiz Game</h3>
                         <p>Test your knowledge with trivia</p>
-                        <button class="btn" onclick="startGame('quiz')">Play Now</button>
+                        <button class="btn btn-custom" onclick="startGame('quiz')">Play Now</button>
                     </div>
                 </div>
             </div>
@@ -701,8 +696,7 @@
                         <h2 id="game-title">Game Title</h2>
                         <button class="back-btn" onclick="showSection('games')">← Back to Games</button>
                     </div>
-                    <div id="game-content">
-                    </div>
+                    <div id="game-content"></div>
                 </div>
             </div>
         </section>
@@ -710,27 +704,22 @@
         <section id="about" class="section">
             <div class="container">
                 <div class="content-section">
-                    <h2>About GameHub</h2>
-                    <p style="font-size: 1.1rem; text-align: center; margin-bottom: 2rem;">
+                    <h2 class="mb-4">About GameHub</h2>
+                    <p class="text-center mb-4 fs-5">
                         Welcome to GameHub, the ultimate collection of classic and modern games all in one place!
                     </p>
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;">
-                        <div>
-                            <h3 style="margin-bottom: 1rem;">🎯 Our Mission</h3>
-                            <p>To provide a fun, accessible gaming experience that brings together classic games in a
-                                modern, responsive web application. Perfect for quick breaks, learning, or just having
-                                fun!</p>
+                    <div class="row g-4 mt-4">
+                        <div class="col-md-4">
+                            <h3 class="mb-3">🎯 Our Mission</h3>
+                            <p>To provide a fun, accessible gaming experience that brings together classic games in a modern, responsive web application. Perfect for quick breaks, learning, or just having fun!</p>
                         </div>
-                        <div>
-                            <h3 style="margin-bottom: 1rem;">💻 Technologies Used</h3>
-                            <p>Built with modern web technologies including HTML5, CSS3, and JavaScript. Features
-                                responsive design, smooth animations, and optimized performance across all devices.</p>
+                        <div class="col-md-4">
+                            <h3 class="mb-3">💻 Technologies Used</h3>
+                            <p>Built with modern web technologies including HTML5, CSS3, and JavaScript. Features responsive design, smooth animations, and optimized performance across all devices.</p>
                         </div>
-                        <div>
-                            <h3 style="margin-bottom: 1rem;">🎮 Game Collection</h3>
-                            <p>Our carefully curated selection includes strategy games, action games, puzzles, and brain
-                                teasers. Each game is fully functional and designed for maximum enjoyment.</p>
+                        <div class="col-md-4">
+                            <h3 class="mb-3">🎮 Game Collection</h3>
+                            <p>Our carefully curated selection includes strategy games, action games, puzzles, and brain teasers. Each game is fully functional and designed for maximum enjoyment.</p>
                         </div>
                     </div>
                 </div>
@@ -740,26 +729,25 @@
         <section id="contact" class="section">
             <div class="container">
                 <div class="content-section">
-                    <h2>Contact Us</h2>
-                    <p style="text-align: center; margin-bottom: 2rem;">
+                    <h2 class="mb-4">Contact Us</h2>
+                    <p class="text-center mb-4">
                         Have feedback, suggestions, or just want to say hello? We'd love to hear from you!
                     </p>
                     <form class="contact-form" onsubmit="submitForm(event)">
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" id="name" name="name" placeholder="Your Name" required>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
                         </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="your@email.com" required>
                         </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" rows="5" placeholder="Your message here..."
-                                required></textarea>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" placeholder="Your message here..." required></textarea>
                         </div>
-                        <div style="text-align: center;">
-                            <button type="submit" class="btn">Send Message</button>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-custom">Send Message</button>
                         </div>
                     </form>
                 </div>
@@ -767,6 +755,9 @@
         </section>
     </main>
 
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         // Navigation
         function showSection(sectionId) {
@@ -774,6 +765,15 @@
                 section.classList.remove('active');
             });
             document.getElementById(sectionId).classList.add('active');
+            
+            // Close mobile menu when a section is selected
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            if (navbarCollapse.classList.contains('show')) {
+                const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+                    toggle: false
+                });
+                bsCollapse.hide();
+            }
         }
 
         // Game Management
@@ -855,7 +855,7 @@
                         ${Array(9).fill(0).map((_, i) => `<div class="tic-cell" onclick="makeMove(${i})"></div>`).join('')}
                     </div>
                     <div class="game-controls">
-                        <button onclick="resetTicTacToe()">Reset Game</button>
+                        <button class="btn btn-primary" onclick="resetTicTacToe()">Reset Game</button>
                     </div>
                 `;
             document.getElementById('game-content').innerHTML = html;
@@ -914,8 +914,8 @@
                     </div>
                     <canvas id="snake-canvas" class="snake-game" width="400" height="400"></canvas>
                     <div class="game-controls">
-                        <button onclick="startSnake()">Start Game</button>
-                        <button onclick="resetSnake()">Reset</button>
+                        <button class="btn btn-primary" onclick="startSnake()">Start Game</button>
+                        <button class="btn btn-secondary" onclick="resetSnake()">Reset</button>
                     </div>
                 `;
             document.getElementById('game-content').innerHTML = html;
@@ -932,8 +932,8 @@
                 food: { x: 15, y: 15 },
                 score: 0,
                 running: false,
-                intervalId: null, // To store the interval for stopping/resetting
-                speed: 100 // Increased speed (lower value = faster)
+                intervalId: null,
+                speed: 100
             };
             drawSnake();
         }
@@ -955,7 +955,7 @@
             if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 ||
                 state.snake.some(segment => segment.x === head.x && segment.y === head.y)) {
                 state.running = false;
-                clearInterval(state.intervalId); // Stop the game loop
+                clearInterval(state.intervalId);
                 alert('Game Over! Score: ' + state.score);
                 return;
             }
@@ -1026,7 +1026,7 @@
                 flipped: [],
                 matched: [],
                 moves: 0,
-                lockBoard: false // To prevent flipping more than two cards
+                lockBoard: false
             };
 
             const html = `
@@ -1045,7 +1045,7 @@
                         `).join('')}
                     </div>
                     <div class="game-controls">
-                        <button onclick="resetMemory()">Reset Game</button>
+                        <button class="btn btn-primary" onclick="resetMemory()">Reset Game</button>
                     </div>
                 `;
             document.getElementById('game-content').innerHTML = html;
@@ -1062,7 +1062,7 @@
             if (state.flipped.length === 2) {
                 state.moves++;
                 document.getElementById('memory-moves').textContent = state.moves;
-                state.lockBoard = true; // Lock the board
+                state.lockBoard = true;
 
                 setTimeout(() => {
                     const [firstIndex, secondIndex] = state.flipped;
@@ -1070,7 +1070,6 @@
                     const secondCardSymbol = state.cards[secondIndex];
 
                     if (firstCardSymbol === secondCardSymbol) {
-                        // Match found
                         state.matched.push(firstIndex, secondIndex);
                         document.querySelector(`[data-index="${firstIndex}"]`).style.pointerEvents = 'none';
                         document.querySelector(`[data-index="${secondIndex}"]`).style.pointerEvents = 'none';
@@ -1079,13 +1078,12 @@
                             alert(`Congratulations! You won in ${state.moves} moves!`);
                         }
                     } else {
-                        // No match, flip back
                         document.querySelector(`[data-index="${firstIndex}"]`).classList.remove('flipped');
                         document.querySelector(`[data-index="${secondIndex}"]`).classList.remove('flipped');
                     }
                     state.flipped = [];
-                    state.lockBoard = false; // Unlock the board
-                }, 1000); // 1 second to see the cards
+                    state.lockBoard = false;
+                }, 1000);
             }
         }
 
@@ -1125,12 +1123,12 @@
                         <p id="rps-result">Choose your move!</p>
                     </div>
                     <div class="game-controls">
-                        <button onclick="playRPS('rock')">🪨 Rock</button>
-                        <button onclick="playRPS('paper')">📄 Paper</button>
-                        <button onclick="playRPS('scissors')">✂️ Scissors</button>
+                        <button class="btn btn-primary" onclick="playRPS('rock')">🪨 Rock</button>
+                        <button class="btn btn-primary" onclick="playRPS('paper')">📄 Paper</button>
+                        <button class="btn btn-primary" onclick="playRPS('scissors')">✂️ Scissors</button>
                     </div>
                     <div class="game-controls">
-                        <button onclick="resetRPS()">Reset Score</button>
+                        <button class="btn btn-secondary" onclick="resetRPS()">Reset Score</button>
                     </div>
                 `;
             document.getElementById('game-content').innerHTML = html;
@@ -1190,8 +1188,8 @@
                         `).join('')}
                     </div>
                     <div class="game-controls">
-                        <button onclick="startGameWhack()">Start Game</button>
-                        <button onclick="resetWhack()">Reset Score</button>
+                        <button class="btn btn-primary" onclick="startGameWhack()">Start Game</button>
+                        <button class="btn btn-secondary" onclick="resetWhack()">Reset Score</button>
                     </div>
                 `;
             document.getElementById('game-content').innerHTML = html;
@@ -1217,7 +1215,7 @@
             const mole = hole.querySelector('.mole');
 
             mole.classList.add('active');
-            const time = randomTime(500, 1500); // Moles appear for 0.5 to 1.5 seconds
+            const time = randomTime(500, 1500);
 
             moleTimeout = setTimeout(() => {
                 mole.classList.remove('active');
@@ -1233,27 +1231,27 @@
             document.getElementById('whack-score').textContent = '0';
             document.getElementById('whack-status').textContent = 'Whack the moles!';
 
-            clearTimeout(moleTimeout); // Clear any existing timeouts
-            peep(); // Start the first mole
+            clearTimeout(moleTimeout);
+            peep();
 
             setTimeout(() => {
                 gameState.whack.timeUp = true;
                 document.getElementById('whack-status').textContent = `Game Over! Your score: ${gameState.whack.score}`;
-            }, 15000); // Game lasts for 15 seconds
+            }, 15000);
         }
 
         function whackMole(e) {
             if (!e.isTrusted || !e.target.classList.contains('mole')) return;
             if (gameState.whack.timeUp) return;
 
-            e.target.classList.remove('active'); // Hide the mole immediately
+            e.target.classList.remove('active');
             gameState.whack.score++;
             document.getElementById('whack-score').textContent = gameState.whack.score;
         }
 
         function resetWhack() {
             clearTimeout(moleTimeout);
-            gameState.whack.timeUp = true; // Ensure the game loop stops
+            gameState.whack.timeUp = true;
             gameState.whack.score = 0;
             document.getElementById('whack-score').textContent = '0';
             document.getElementById('whack-status').textContent = '';
@@ -1263,7 +1261,7 @@
         // Number Guessing
         function createNumberGame() {
             gameState.number = {
-                secretNumber: Math.floor(Math.random() * 9) + 1, // Number between 1 and 9
+                secretNumber: Math.floor(Math.random() * 9) + 1,
                 attempts: 0,
                 gameOver: false
             };
@@ -1276,7 +1274,7 @@
                         ${Array.from({ length: 9 }, (_, i) => `<button class="number-key" onclick="makeNumberGuess(${i + 1})">${i + 1}</button>`).join('')}
                     </div>
                     <div class="game-controls">
-                        <button onclick="resetNumberGame()">Reset Game</button>
+                        <button class="btn btn-primary" onclick="resetNumberGame()">Reset Game</button>
                     </div>
                 `;
             document.getElementById('game-content').innerHTML = html;
@@ -1344,7 +1342,7 @@
                     <div class="hangman-word" id="hangman-display-word"></div>
                     <div class="alphabet" id="hangman-alphabet"></div>
                     <div class="game-controls">
-                        <button onclick="resetHangman()">Reset Game</button>
+                        <button class="btn btn-primary" onclick="resetHangman()">Reset Game</button>
                     </div>
                 `;
             document.getElementById('game-content').innerHTML = html;
@@ -1437,7 +1435,7 @@
         function createSliderGame() {
             gameState.slider = {
                 board: [],
-                size: 3, // 3x3 puzzle
+                size: 3,
                 emptyTileIndex: 0
             };
             const html = `
@@ -1447,7 +1445,7 @@
                     </div>
                     <div class="game-board slider-puzzle" id="slider-board"></div>
                     <div class="game-controls">
-                        <button onclick="resetSliderGame()">Reset Game</button>
+                        <button class="btn btn-primary" onclick="resetSliderGame()">Reset Game</button>
                     </div>
                 `;
             document.getElementById('game-content').innerHTML = html;
@@ -1457,9 +1455,8 @@
         function initSliderGame() {
             const state = gameState.slider;
             const numbers = Array.from({ length: state.size * state.size - 1 }, (_, i) => i + 1);
-            numbers.push(''); // Empty tile
+            numbers.push('');
 
-            // Shuffle the array until it's solvable
             let shuffledNumbers;
             do {
                 shuffledNumbers = numbers.sort(() => Math.random() - 0.5);
@@ -1492,13 +1489,13 @@
 
         function isSolvable(arr, size) {
             const inversions = getInversions(arr.filter(val => val !== ''));
-            if (size % 2 === 1) { // Odd grid size
+            if (size % 2 === 1) {
                 return inversions % 2 === 0;
-            } else { // Even grid size
+            } else {
                 const emptyRowFromBottom = size - getEmptyRow(arr, size);
-                if (emptyRowFromBottom % 2 === 1) { // Empty tile on odd row from bottom
+                if (emptyRowFromBottom % 2 === 1) {
                     return inversions % 2 === 0;
-                } else { // Empty tile on even row from bottom
+                } else {
                     return inversions % 2 === 1;
                 }
             }
@@ -1535,7 +1532,6 @@
                 (Math.abs(col - emptyCol) === 1 && row === emptyRow);
 
             if (isAdjacent) {
-                // Swap tiles
                 [board[index], board[emptyIndex]] = [board[emptyIndex], board[index]];
                 state.emptyTileIndex = index;
                 state.moves++;
@@ -1543,7 +1539,6 @@
                 renderSliderBoard();
                 if (checkSliderWin()) {
                     document.getElementById('slider-status').textContent = `You solved it in ${state.moves} moves! 🎉`;
-                    // Disable clicks after winning
                     document.querySelectorAll('.slider-tile').forEach(tile => tile.onclick = null);
                 }
             }
@@ -1564,7 +1559,7 @@
         }
 
         // Breakout Game
-        let breakoutGame; // To hold the instance of the Breakout game
+        let breakoutGame;
 
         function createBreakoutGame() {
             const html = `
@@ -1575,8 +1570,8 @@
                     </div>
                     <canvas id="breakout-canvas" class="breakout-canvas" width="480" height="320"></canvas>
                     <div class="game-controls">
-                        <button onclick="startBreakout()">Start Game</button>
-                        <button onclick="resetBreakout()">Reset Game</button>
+                        <button class="btn btn-primary" onclick="startBreakout()">Start Game</button>
+                        <button class="btn btn-secondary" onclick="resetBreakout()">Reset Game</button>
                     </div>
                 `;
             document.getElementById('game-content').innerHTML = html;
@@ -1587,7 +1582,6 @@
             const canvas = document.getElementById("breakout-canvas");
             const ctx = canvas.getContext("2d");
 
-            // Game variables
             let paddleHeight = 10;
             let paddleWidth = 75;
             let paddleX = (canvas.width - paddleWidth) / 2;
@@ -1595,8 +1589,8 @@
             let ballRadius = 10;
             let x = canvas.width / 2;
             let y = canvas.height - 30;
-            let dx = 3; // Increased ball speed
-            let dy = -3; // Increased ball speed
+            let dx = 3;
+            let dy = -3;
 
             let brickRowCount = 5;
             let brickColumnCount = 6;
@@ -1617,7 +1611,6 @@
                 }
             }
 
-            // Event Listeners for paddle movement
             let rightPressed = false;
             let leftPressed = false;
 
@@ -1649,12 +1642,12 @@
                         if (b.status === 1) {
                             if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
                                 dy = -dy;
-                                b.status = 0; // Brick is broken
+                                b.status = 0;
                                 score++;
                                 document.getElementById('breakout-score').textContent = score;
                                 if (score === brickRowCount * brickColumnCount) {
                                     document.getElementById('breakout-status').textContent = "YOU WIN, CONGRATULATIONS!";
-                                    clearInterval(breakoutGame.intervalId); // Stop the game
+                                    clearInterval(breakoutGame.intervalId);
                                 }
                             }
                         }
@@ -1688,7 +1681,7 @@
                             bricks[c][r].y = brickY;
                             ctx.beginPath();
                             ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                            ctx.fillStyle = "#FF5733"; // Brick color
+                            ctx.fillStyle = "#FF5733";
                             ctx.fill();
                             ctx.closePath();
                         }
@@ -1697,13 +1690,12 @@
             }
 
             function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 drawBricks();
                 drawBall();
                 drawPaddle();
                 collisionDetection();
 
-                // Ball movement logic
                 if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
                     dx = -dx;
                 }
@@ -1712,26 +1704,23 @@
                 } else if (y + dy > canvas.height - ballRadius - paddleHeight) {
                     if (x > paddleX && x < paddleX + paddleWidth) {
                         dy = -dy;
-                        // Add some dynamic to ball movement based on where it hits the paddle
                         dx = 8 * ((x - (paddleX + paddleWidth / 2)) / paddleWidth);
-                    } else if (y + dy > canvas.height - ballRadius) { // Ball hits the bottom wall
+                    } else if (y + dy > canvas.height - ballRadius) {
                         lives--;
                         document.getElementById('breakout-lives').textContent = lives;
                         if (!lives) {
                             document.getElementById('breakout-status').textContent = "GAME OVER!";
-                            clearInterval(breakoutGame.intervalId); // Stop the game
+                            clearInterval(breakoutGame.intervalId);
                         } else {
-                            // Reset ball and paddle
                             x = canvas.width / 2;
                             y = canvas.height - 30;
-                            dx = 3; // Reset speed
-                            dy = -3; // Reset speed
+                            dx = 3;
+                            dy = -3;
                             paddleX = (canvas.width - paddleWidth) / 2;
                         }
                     }
                 }
 
-                // Paddle movement logic
                 if (rightPressed && paddleX < canvas.width - paddleWidth) {
                     paddleX += 7;
                 } else if (leftPressed && paddleX > 0) {
@@ -1742,7 +1731,6 @@
                 y += dy;
             }
 
-            // Store game state in global object
             breakoutGame = {
                 canvas, ctx,
                 paddleHeight, paddleWidth, paddleX,
@@ -1750,11 +1738,10 @@
                 brickRowCount, brickColumnCount, brickWidth, brickHeight, brickPadding, brickOffsetTop, brickOffsetLeft,
                 score, lives, bricks,
                 rightPressed, leftPressed,
-                intervalId: null, // To store the game loop interval
+                intervalId: null,
                 draw,
                 reset: function () {
                     clearInterval(this.intervalId);
-                    // Reset all variables to initial state
                     this.paddleX = (this.canvas.width - this.paddleWidth) / 2;
                     this.x = this.canvas.width / 2;
                     this.y = this.canvas.height - 30;
@@ -1772,16 +1759,16 @@
                             this.bricks[c][r] = { x: 0, y: 0, status: 1 };
                         }
                     }
-                    this.draw(); // Draw initial state
+                    this.draw();
                 }
             };
-            breakoutGame.draw(); // Initial draw
+            breakoutGame.draw();
         }
 
         function startBreakout() {
             if (breakoutGame && !breakoutGame.intervalId) {
                 document.getElementById('breakout-status').textContent = 'Game started!';
-                breakoutGame.intervalId = setInterval(breakoutGame.draw, 10); // Faster game loop (lower value = faster)
+                breakoutGame.intervalId = setInterval(breakoutGame.draw, 10);
             }
         }
 
@@ -1790,7 +1777,6 @@
                 breakoutGame.reset();
             }
         }
-
 
         // Quiz Game
         const quizQuestions = [
@@ -1824,8 +1810,8 @@
                     <div id="quiz-question-container" class="quiz-question"></div>
                     <div id="quiz-options-container" class="quiz-options"></div>
                     <div class="game-controls">
-                        <button onclick="nextQuizQuestion()">Next Question</button>
-                        <button onclick="resetQuiz()">Reset Quiz</button>
+                        <button class="btn btn-primary" onclick="nextQuizQuestion()">Next Question</button>
+                        <button class="btn btn-secondary" onclick="resetQuiz()">Reset Quiz</button>
                     </div>
                 `;
             document.getElementById('game-content').innerHTML = html;
@@ -1838,7 +1824,7 @@
                 document.getElementById('quiz-question-container').textContent = `Quiz finished! Your final score: ${state.score} / ${quizQuestions.length}`;
                 document.getElementById('quiz-options-container').innerHTML = '';
                 document.getElementById('quiz-status').textContent = 'Game Over!';
-                document.querySelector('#game-content .game-controls button:first-of-type').disabled = true; // Disable "Next Question"
+                document.querySelector('#game-content .game-controls button:first-of-type').disabled = true;
                 return;
             }
 
@@ -1854,7 +1840,7 @@
                 button.onclick = () => checkQuizAnswer(option);
                 optionsContainer.appendChild(button);
             });
-            document.getElementById('quiz-status').textContent = ''; // Clear previous status
+            document.getElementById('quiz-status').textContent = '';
         }
 
         function checkQuizAnswer(selectedOption) {
@@ -1862,7 +1848,6 @@
             const correctAnswer = quizQuestions[state.currentQuestionIndex].answer;
             const statusElement = document.getElementById('quiz-status');
 
-            // Disable all options after selection
             document.querySelectorAll('.quiz-option').forEach(button => button.disabled = true);
 
             if (selectedOption === correctAnswer) {
@@ -1879,8 +1864,8 @@
         function nextQuizQuestion() {
             gameState.quiz.currentQuestionIndex++;
             loadQuizQuestion();
-            document.querySelectorAll('.quiz-option').forEach(button => button.disabled = false); // Re-enable options for next question
-            document.getElementById('quiz-status').style.color = ''; // Reset color
+            document.querySelectorAll('.quiz-option').forEach(button => button.disabled = false);
+            document.getElementById('quiz-status').style.color = '';
         }
 
         function resetQuiz() {
@@ -1892,7 +1877,6 @@
             document.querySelector('#game-content .game-controls button:first-of-type').disabled = false;
             loadQuizQuestion();
         }
-
 
         // Contact Form
         function submitForm(event) {
