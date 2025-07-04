@@ -1907,8 +1907,7 @@ function createBreakoutGame() {
             <button onclick="resetBreakout()">Reset Game</button>
         </div>
         <div class="mobile-controls">
-            <button ontouchstart="movePaddle('left')" ontouchend="stopPaddle()">←</button>
-            <button ontouchstart="movePaddle('right')" ontouchend="stopPaddle()">→</button>
+            <!-- Removed the arrow buttons -->
         </div>
     `;
     document.getElementById('game-content').innerHTML = html;
