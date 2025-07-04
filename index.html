@@ -494,42 +494,60 @@
             transform: translateY(-2px);
         }
 
-        .hangman-word {
-            font-size: 2rem;
-            font-weight: bold;
-            text-align: center;
-            margin: 2rem 0;
-            letter-spacing: 0.5rem;
-        }
+       /* Hangman specific styles */
+.hangman-word {
+    font-size: 2rem;
+    letter-spacing: 0.5rem;
+    margin: 1.5rem 0;
+    min-height: 3rem;
+    text-align: center;
+}
 
-        .alphabet {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
-            max-width: 400px;
-            margin: 0 auto;
-        }
+.alphabet {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    margin: 1rem auto;
+    max-width: 500px;
+}
 
-        .letter-btn {
-            padding: 10px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
+.letter-btn {
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
 
-        .letter-btn:hover {
-            background: #0056b3;
-        }
+.letter-btn:hover:not(:disabled) {
+    background: #0056b3;
+    transform: scale(1.05);
+}
 
-        .letter-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
+.letter-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
 
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .alphabet {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .hangman-word {
+        font-size: 1.5rem;
+        letter-spacing: 0.3rem;
+    }
+    
+    .letter-btn {
+        padding: 0.4rem;
+        font-size: 1rem;
+    }
+}
         .quiz-question {
             background: #f8f9fa;
             padding: 2rem;
@@ -1625,9 +1643,26 @@
         // Hangman
        // Hangman Game
 const hangmanWords = ['JAVASCRIPT', 'PROGRAMMING', 'COMPUTER', 'DEVELOPER', 'HTML', 'CSS'];
+let hangmanGame;
 
 function createHangmanGame() {
-    gameState.hangman = {
+    const html = `
+        <div class="game-info">
+            <p id="hangman-status">Guess the word!</p>
+            <p>Wrong guesses: <span id="wrong-guesses">0</span>/6</p>
+        </div>
+        <div class="hangman-word" id="hangman-display-word"></div>
+        <div class="alphabet" id="hangman-alphabet"></div>
+        <div class="game-controls">
+            <button onclick="resetHangman()">New Game</button>
+        </div>
+    `;
+    document.getElementById('game-content').innerHTML = html;
+    initHangman();
+}
+
+function initHangman() {
+    const state = {
         word: hangmanWords[Math.floor(Math.random() * hangmanWords.length)],
         guessedLetters: [],
         wrongGuesses: 0,
@@ -1636,79 +1671,49 @@ function createHangmanGame() {
         gameOver: false
     };
     
-    const html = `
-        <div class="game-info">
-            <p id="hangman-status">Guess a letter!</p>
-            <p>Wrong Guesses: <span id="wrong-guesses">0</span> / ${gameState.hangman.maxWrongGuesses}</p>
-        </div>
-        <div class="hangman-word" id="hangman-display-word"></div>
-        <div class="alphabet" id="hangman-alphabet"></div>
-        <div class="game-controls">
-            <button onclick="resetHangman()">Reset Game</button>
-        </div>
-    `;
-    document.getElementById('game-content').innerHTML = html;
-    
-    initializeHangman();
-    renderHangman();
-}
-
-function initializeHangman() {
-    const state = gameState.hangman;
-    // Create display word with underscores (no spaces)
+    // Initialize display word with underscores
     state.displayWord = '_'.repeat(state.word.length);
-    state.guessedLetters = [];
-    state.wrongGuesses = 0;
-    state.gameOver = false;
-}
-
-function renderHangman() {
-    const state = gameState.hangman;
-    // Display word with spaces between characters for better readability
-    document.getElementById('hangman-display-word').textContent = 
-        state.displayWord.split('').join(' ');
-    document.getElementById('wrong-guesses').textContent = state.wrongGuesses;
-
+    
+    // Create alphabet buttons
     const alphabetContainer = document.getElementById('hangman-alphabet');
     alphabetContainer.innerHTML = '';
     
     for (let i = 65; i <= 90; i++) {
         const letter = String.fromCharCode(i);
         const button = document.createElement('button');
-        button.classList.add('letter-btn');
+        button.className = 'letter-btn';
         button.textContent = letter;
-        button.onclick = () => guessLetter(letter);
         
-        if (state.guessedLetters.includes(letter) || state.gameOver) {
-            button.disabled = true;
-            if (!state.word.includes(letter) && state.guessedLetters.includes(letter)) {
-                button.style.backgroundColor = '#dc3545'; // Red for wrong guesses
-            } else if (state.word.includes(letter) && state.guessedLetters.includes(letter)) {
-                button.style.backgroundColor = '#28a745'; // Green for correct guesses
-            }
-        }
+        // Use both onclick and ontouchstart for cross-device compatibility
+        button.onclick = function() { guessLetter(letter, this); };
+        button.ontouchstart = function(e) { 
+            e.preventDefault(); // Prevent touch event from triggering click twice
+            guessLetter(letter, this); 
+        };
         
         alphabetContainer.appendChild(button);
     }
-
-    const statusElement = document.getElementById('hangman-status');
-    if (state.displayWord === state.word) {
-        statusElement.textContent = 'You won! 🎉';
-        state.gameOver = true;
-    } else if (state.wrongGuesses >= state.maxWrongGuesses) {
-        statusElement.textContent = `Game Over! The word was: ${state.word}`;
-        state.gameOver = true;
-    }
+    
+    // Update display
+    updateHangmanDisplay(state);
+    
+    // Store game state
+    hangmanGame = { state };
 }
 
-function guessLetter(letter) {
-    const state = gameState.hangman;
-    if (state.guessedLetters.includes(letter) || state.gameOver) return;
-
+function guessLetter(letter, buttonElement) {
+    const state = hangmanGame.state;
+    if (state.gameOver || state.guessedLetters.includes(letter)) return;
+    
+    // Add to guessed letters
     state.guessedLetters.push(letter);
     
+    // Disable the button and change its appearance
+    buttonElement.disabled = true;
+    
     if (state.word.includes(letter)) {
-        // Update display word with correctly guessed letters
+        // Correct guess - update display word
+        buttonElement.style.backgroundColor = '#28a745'; // Green
         let newDisplay = '';
         for (let i = 0; i < state.word.length; i++) {
             if (state.word[i] === letter || state.displayWord[i] !== '_') {
@@ -1719,25 +1724,42 @@ function guessLetter(letter) {
         }
         state.displayWord = newDisplay;
     } else {
+        // Wrong guess
         state.wrongGuesses++;
+        buttonElement.style.backgroundColor = '#dc3545'; // Red
     }
     
-    renderHangman();
+    // Update display and check game state
+    updateHangmanDisplay(state);
+    checkGameState(state);
+}
+
+function updateHangmanDisplay(state) {
+    // Show word with spaces between letters for better readability
+    document.getElementById('hangman-display-word').textContent = 
+        state.displayWord.split('').join(' ');
+    
+    // Update wrong guesses counter
+    document.getElementById('wrong-guesses').textContent = state.wrongGuesses;
+}
+
+function checkGameState(state) {
+    const statusElement = document.getElementById('hangman-status');
+    
+    if (state.displayWord === state.word) {
+        // Player won
+        statusElement.textContent = 'You won! 🎉';
+        state.gameOver = true;
+    } else if (state.wrongGuesses >= state.maxWrongGuesses) {
+        // Player lost
+        statusElement.textContent = `Game Over! The word was: ${state.word}`;
+        state.gameOver = true;
+    }
 }
 
 function resetHangman() {
-    gameState.hangman = {
-        word: hangmanWords[Math.floor(Math.random() * hangmanWords.length)],
-        guessedLetters: [],
-        wrongGuesses: 0,
-        maxWrongGuesses: 6,
-        displayWord: '',
-        gameOver: false
-    };
-    initializeHangman();
-    renderHangman();
+    initHangman();
 }
-
         // Puzzle Slider Game
         function createSliderGame() {
             gameState.slider = {
@@ -1867,6 +1889,7 @@ function resetHangman() {
 
         // Breakout Game
         // Breakout Game
+// Breakout Game Implementation
 let breakoutGame;
 
 function createBreakoutGame() {
@@ -1874,12 +1897,16 @@ function createBreakoutGame() {
         <div class="game-info">
             <p>Score: <span id="breakout-score">0</span></p>
             <p>Lives: <span id="breakout-lives">3</span></p>
-            <p id="breakout-status">Use arrow keys or touch controls to move the paddle!</p>
+            <p id="breakout-status">Press Start or use arrow keys/touch</p>
         </div>
         <canvas id="breakout-canvas" class="breakout-canvas" width="480" height="320"></canvas>
         <div class="game-controls">
             <button onclick="startBreakout()">Start Game</button>
             <button onclick="resetBreakout()">Reset Game</button>
+        </div>
+        <div class="mobile-controls" id="breakout-controls">
+            <button class="mobile-control-btn" ontouchstart="movePaddle('left')" ontouchend="stopPaddle()">←</button>
+            <button class="mobile-control-btn" ontouchstart="movePaddle('right')" ontouchend="stopPaddle()">→</button>
         </div>
     `;
     document.getElementById('game-content').innerHTML = html;
@@ -1889,150 +1916,118 @@ function createBreakoutGame() {
 function initBreakout() {
     const canvas = document.getElementById("breakout-canvas");
     const ctx = canvas.getContext("2d");
+    
+    // Game state
+    const state = {
+        paddle: {
+            width: 75,
+            height: 10,
+            x: canvas.width / 2 - 37.5,
+            speed: 8
+        },
+        ball: {
+            x: canvas.width / 2,
+            y: canvas.height - 30,
+            radius: 10,
+            speedX: 4,
+            speedY: -4,
+            minSpeed: 3,
+            maxSpeed: 7
+        },
+        bricks: {
+            rowCount: 3,
+            colCount: 5,
+            width: 75,
+            height: 20,
+            padding: 10,
+            offsetTop: 30,
+            offsetLeft: 30,
+            array: []
+        },
+        score: 0,
+        lives: 3,
+        running: false,
+        rightPressed: false,
+        leftPressed: false,
+        animationId: null
+    };
 
-    // Game variables
-    const paddleHeight = 10;
-    const paddleWidth = 75;
-    let paddleX = (canvas.width - paddleWidth) / 2;
-
-    const ballRadius = 10;
-    let ballX = canvas.width / 2;
-    let ballY = canvas.height - 30;
-    let ballSpeedX = 4;
-    let ballSpeedY = -4;
-
-    const brickRowCount = 3;
-    const brickColumnCount = 5;
-    const brickWidth = 75;
-    const brickHeight = 20;
-    const brickPadding = 10;
-    const brickOffsetTop = 30;
-    const brickOffsetLeft = 30;
-
-    let score = 0;
-    let lives = 3;
-    let gameRunning = false;
-
-    // Create bricks
-    const bricks = [];
-    for (let c = 0; c < brickColumnCount; c++) {
-        bricks[c] = [];
-        for (let r = 0; r < brickRowCount; r++) {
-            bricks[c][r] = { x: 0, y: 0, status: 1 };
+    // Initialize bricks
+    for (let c = 0; c < state.bricks.colCount; c++) {
+        state.bricks.array[c] = [];
+        for (let r = 0; r < state.bricks.rowCount; r++) {
+            state.bricks.array[c][r] = { x: 0, y: 0, status: 1 };
         }
     }
-
-    // Control variables
-    let rightPressed = false;
-    let leftPressed = false;
-    let touchX = null;
 
     // Event listeners
     function keyDownHandler(e) {
         if (e.key === "Right" || e.key === "ArrowRight") {
-            rightPressed = true;
+            state.rightPressed = true;
         } else if (e.key === "Left" || e.key === "ArrowLeft") {
-            leftPressed = true;
+            state.leftPressed = true;
         }
     }
 
     function keyUpHandler(e) {
         if (e.key === "Right" || e.key === "ArrowRight") {
-            rightPressed = false;
+            state.rightPressed = false;
         } else if (e.key === "Left" || e.key === "ArrowLeft") {
-            leftPressed = false;
+            state.leftPressed = false;
         }
     }
 
-    function touchStartHandler(e) {
-        touchX = e.touches[0].clientX;
-    }
-
-    function touchMoveHandler(e) {
-        if (!touchX) return;
-        const newTouchX = e.touches[0].clientX;
-        const relativeX = newTouchX - touchX;
-        
-        if (relativeX > 0) {
-            rightPressed = true;
-            leftPressed = false;
-        } else if (relativeX < 0) {
-            leftPressed = true;
-            rightPressed = false;
-        }
-        
-        touchX = newTouchX;
-        e.preventDefault();
-    }
-
-    function touchEndHandler() {
-        rightPressed = false;
-        leftPressed = false;
-        touchX = null;
-    }
-
-    // Add event listeners
-    document.addEventListener("keydown", keyDownHandler, false);
-    document.addEventListener("keyup", keyUpHandler, false);
-    canvas.addEventListener("touchstart", touchStartHandler, false);
-    canvas.addEventListener("touchmove", touchMoveHandler, false);
-    canvas.addEventListener("touchend", touchEndHandler, false);
-
-    // Collision detection
-    function collisionDetection() {
-        for (let c = 0; c < brickColumnCount; c++) {
-            for (let r = 0; r < brickRowCount; r++) {
-                const brick = bricks[c][r];
-                if (brick.status === 1) {
-                    if (
-                        ballX > brick.x &&
-                        ballX < brick.x + brickWidth &&
-                        ballY > brick.y &&
-                        ballY < brick.y + brickHeight
-                    ) {
-                        ballSpeedY = -ballSpeedY;
-                        brick.status = 0;
-                        score++;
-                        document.getElementById("breakout-score").textContent = score;
-                        
-                        // Check if all bricks are broken
-                        if (score === brickRowCount * brickColumnCount) {
-                            document.getElementById("breakout-status").textContent = "YOU WIN!";
-                            gameRunning = false;
-                        }
-                    }
-                }
-            }
+    function movePaddle(direction) {
+        if (direction === 'left') {
+            state.leftPressed = true;
+            state.rightPressed = false;
+        } else {
+            state.rightPressed = true;
+            state.leftPressed = false;
         }
     }
 
-    // Draw functions
-    function drawBall() {
+    function stopPaddle() {
+        state.leftPressed = false;
+        state.rightPressed = false;
+    }
+
+    document.addEventListener("keydown", keyDownHandler);
+    document.addEventListener("keyup", keyUpHandler);
+
+    // Drawing functions
+    function drawPaddle() {
         ctx.beginPath();
-        ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+        ctx.rect(
+            state.paddle.x,
+            canvas.height - state.paddle.height,
+            state.paddle.width,
+            state.paddle.height
+        );
         ctx.fillStyle = "#0095DD";
         ctx.fill();
         ctx.closePath();
     }
 
-    function drawPaddle() {
+    function drawBall() {
         ctx.beginPath();
-        ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+        ctx.arc(state.ball.x, state.ball.y, state.ball.radius, 0, Math.PI * 2);
         ctx.fillStyle = "#0095DD";
         ctx.fill();
         ctx.closePath();
     }
 
     function drawBricks() {
-        for (let c = 0; c < brickColumnCount; c++) {
-            for (let r = 0; r < brickRowCount; r++) {
-                if (bricks[c][r].status === 1) {
-                    const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
-                    const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
-                    bricks[c][r].x = brickX;
-                    bricks[c][r].y = brickY;
+        for (let c = 0; c < state.bricks.colCount; c++) {
+            for (let r = 0; r < state.bricks.rowCount; r++) {
+                if (state.bricks.array[c][r].status === 1) {
+                    const brickX = c * (state.bricks.width + state.bricks.padding) + state.bricks.offsetLeft;
+                    const brickY = r * (state.bricks.height + state.bricks.padding) + state.bricks.offsetTop;
+                    state.bricks.array[c][r].x = brickX;
+                    state.bricks.array[c][r].y = brickY;
+                    
                     ctx.beginPath();
-                    ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                    ctx.rect(brickX, brickY, state.bricks.width, state.bricks.height);
                     ctx.fillStyle = "#FF5733";
                     ctx.fill();
                     ctx.closePath();
@@ -2041,10 +2036,39 @@ function initBreakout() {
         }
     }
 
+    // Collision detection
+    function collisionDetection() {
+        for (let c = 0; c < state.bricks.colCount; c++) {
+            for (let r = 0; r < state.bricks.rowCount; r++) {
+                const brick = state.bricks.array[c][r];
+                if (brick.status === 1) {
+                    if (
+                        state.ball.x > brick.x &&
+                        state.ball.x < brick.x + state.bricks.width &&
+                        state.ball.y > brick.y &&
+                        state.ball.y < brick.y + state.bricks.height
+                    ) {
+                        state.ball.speedY = -state.ball.speedY;
+                        brick.status = 0;
+                        state.score++;
+                        document.getElementById("breakout-score").textContent = state.score;
+                        
+                        // Check for win
+                        if (state.score === state.bricks.rowCount * state.bricks.colCount) {
+                            document.getElementById("breakout-status").textContent = "YOU WIN!";
+                            state.running = false;
+                            cancelAnimationFrame(state.animationId);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // Main game loop
     function draw() {
-        if (!gameRunning) return;
-
+        if (!state.running) return;
+        
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBricks();
         drawBall();
@@ -2052,117 +2076,112 @@ function initBreakout() {
         collisionDetection();
 
         // Ball movement
-        ballX += ballSpeedX;
-        ballY += ballSpeedY;
+        state.ball.x += state.ball.speedX;
+        state.ball.y += state.ball.speedY;
 
         // Wall collision
-        if (ballX + ballSpeedX > canvas.width - ballRadius || ballX + ballSpeedX < ballRadius) {
-            ballSpeedX = -ballSpeedX;
+        if (state.ball.x + state.ball.speedX > canvas.width - state.ball.radius || 
+            state.ball.x + state.ball.speedX < state.ball.radius) {
+            state.ball.speedX = -state.ball.speedX;
         }
         
         // Top collision
-        if (ballY + ballSpeedY < ballRadius) {
-            ballSpeedY = -ballSpeedY;
+        if (state.ball.y + state.ball.speedY < state.ball.radius) {
+            state.ball.speedY = -state.ball.speedY;
         } 
         // Bottom collision (missed paddle)
-        else if (ballY + ballSpeedY > canvas.height - ballRadius) {
-            if (ballX > paddleX && ballX < paddleX + paddleWidth) {
+        else if (state.ball.y + state.ball.speedY > canvas.height - state.ball.radius) {
+            // Paddle collision
+            if (state.ball.x > state.paddle.x && state.ball.x < state.paddle.x + state.paddle.width) {
                 // Calculate bounce angle based on where ball hits paddle
-                const hitPosition = (ballX - paddleX) / paddleWidth;
-                const angle = hitPosition * Math.PI - Math.PI/2;
-                const speed = Math.sqrt(ballSpeedX * ballSpeedX + ballSpeedY * ballSpeedY);
-                ballSpeedX = speed * Math.cos(angle);
-                ballSpeedY = -Math.abs(speed * Math.sin(angle));
-            } else {
-                lives--;
-                document.getElementById("breakout-lives").textContent = lives;
+                const hitPos = (state.ball.x - (state.paddle.x + state.paddle.width/2)) / (state.paddle.width/2);
+                const angle = hitPos * Math.PI/3; // Max 60 degree angle
                 
-                if (lives <= 0) {
-                    document.getElementById("breakout-status").textContent = "GAME OVER!";
-                    gameRunning = false;
+                // Calculate new speed while maintaining overall velocity
+                const speed = Math.sqrt(state.ball.speedX*state.ball.speedX + state.ball.speedY*state.ball.speedY);
+                state.ball.speedX = speed * Math.sin(angle);
+                state.ball.speedY = -Math.abs(speed * Math.cos(angle));
+                
+                // Ensure minimum speed
+                const currentSpeed = Math.sqrt(state.ball.speedX*state.ball.speedX + state.ball.speedY*state.ball.speedY);
+                if (currentSpeed < state.ball.minSpeed) {
+                    const ratio = state.ball.minSpeed / currentSpeed;
+                    state.ball.speedX *= ratio;
+                    state.ball.speedY *= ratio;
+                }
+            } else {
+                state.lives--;
+                document.getElementById("breakout-lives").textContent = state.lives;
+                
+                if (state.lives <= 0) {
+                    document.getElementById("breakout-status").textContent = "GAME OVER";
+                    state.running = false;
+                    cancelAnimationFrame(state.animationId);
                 } else {
                     // Reset ball and paddle
-                    ballX = canvas.width / 2;
-                    ballY = canvas.height - 30;
-                    ballSpeedX = 4 * (Math.random() > 0.5 ? 1 : -1);
-                    ballSpeedY = -4;
-                    paddleX = (canvas.width - paddleWidth) / 2;
+                    state.ball.x = canvas.width / 2;
+                    state.ball.y = canvas.height - 30;
+                    state.ball.speedX = 4 * (Math.random() > 0.5 ? 1 : -1);
+                    state.ball.speedY = -4;
+                    state.paddle.x = canvas.width / 2 - state.paddle.width / 2;
                 }
             }
         }
 
         // Paddle movement
-        if (rightPressed && paddleX < canvas.width - paddleWidth) {
-            paddleX += 7;
-        } else if (leftPressed && paddleX > 0) {
-            paddleX -= 7;
+        if (state.rightPressed && state.paddle.x < canvas.width - state.paddle.width) {
+            state.paddle.x += state.paddle.speed;
+        } else if (state.leftPressed && state.paddle.x > 0) {
+            state.paddle.x -= state.paddle.speed;
         }
 
-        requestAnimationFrame(draw);
+        state.animationId = requestAnimationFrame(draw);
     }
 
-    // Store game state
+    // Store game state and functions
     breakoutGame = {
         canvas,
         ctx,
-        paddleHeight,
-        paddleWidth,
-        paddleX,
-        ballRadius,
-        ballX,
-        ballY,
-        ballSpeedX,
-        ballSpeedY,
-        brickRowCount,
-        brickColumnCount,
-        brickWidth,
-        brickHeight,
-        brickPadding,
-        brickOffsetTop,
-        brickOffsetLeft,
-        score,
-        lives,
-        bricks,
-        rightPressed,
-        leftPressed,
-        gameRunning,
+        state,
         draw,
         reset: function() {
             // Reset game state
-            this.paddleX = (this.canvas.width - this.paddleWidth) / 2;
-            this.ballX = this.canvas.width / 2;
-            this.ballY = this.canvas.height - 30;
-            this.ballSpeedX = 4 * (Math.random() > 0.5 ? 1 : -1);
-            this.ballSpeedY = -4;
-            this.score = 0;
-            this.lives = 3;
-            this.gameRunning = false;
+            this.state.paddle.x = this.canvas.width / 2 - this.state.paddle.width / 2;
+            this.state.ball.x = this.canvas.width / 2;
+            this.state.ball.y = this.canvas.height - 30;
+            this.state.ball.speedX = 4 * (Math.random() > 0.5 ? 1 : -1);
+            this.state.ball.speedY = -4;
+            this.state.score = 0;
+            this.state.lives = 3;
+            this.state.running = false;
             
             // Reset bricks
-            for (let c = 0; c < this.brickColumnCount; c++) {
-                for (let r = 0; r < this.brickRowCount; r++) {
-                    this.bricks[c][r].status = 1;
+            for (let c = 0; c < this.state.bricks.colCount; c++) {
+                for (let r = 0; r < this.state.bricks.rowCount; r++) {
+                    this.state.bricks.array[c][r].status = 1;
                 }
             }
             
             // Update UI
             document.getElementById("breakout-score").textContent = "0";
             document.getElementById("breakout-lives").textContent = "3";
-            document.getElementById("breakout-status").textContent = "Use arrow keys or touch controls to move the paddle!";
+            document.getElementById("breakout-status").textContent = "Press Start or use arrow keys/touch";
             
             // Draw initial state
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             drawBricks();
             drawBall();
             drawPaddle();
+            
+            // Cancel any running animation
+            if (this.state.animationId) {
+                cancelAnimationFrame(this.state.animationId);
+            }
         },
         cleanup: function() {
             // Remove event listeners
             document.removeEventListener("keydown", keyDownHandler);
             document.removeEventListener("keyup", keyUpHandler);
-            this.canvas.removeEventListener("touchstart", touchStartHandler);
-            this.canvas.removeEventListener("touchmove", touchMoveHandler);
-            this.canvas.removeEventListener("touchend", touchEndHandler);
         }
     };
 
@@ -2171,10 +2190,10 @@ function initBreakout() {
 }
 
 function startBreakout() {
-    if (breakoutGame && !breakoutGame.gameRunning) {
-        breakoutGame.gameRunning = true;
+    if (breakoutGame && !breakoutGame.state.running) {
+        breakoutGame.state.running = true;
         document.getElementById("breakout-status").textContent = "Game started!";
-        requestAnimationFrame(breakoutGame.draw);
+        breakoutGame.draw();
     }
 }
 
@@ -2184,10 +2203,22 @@ function resetBreakout() {
     }
 }
 
-// Cleanup when switching games
-function cleanupBreakout() {
+function movePaddle(direction) {
     if (breakoutGame) {
-        breakoutGame.cleanup();
+        if (direction === 'left') {
+            breakoutGame.state.leftPressed = true;
+            breakoutGame.state.rightPressed = false;
+        } else {
+            breakoutGame.state.rightPressed = true;
+            breakoutGame.state.leftPressed = false;
+        }
+    }
+}
+
+function stopPaddle() {
+    if (breakoutGame) {
+        breakoutGame.state.leftPressed = false;
+        breakoutGame.state.rightPressed = false;
     }
 }
         // Quiz Game
