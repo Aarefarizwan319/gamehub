@@ -1,11 +1,10 @@
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GameHub - Multi-Game WebApp</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -181,15 +180,11 @@
             border-radius: 20px;
             padding: 2rem;
             margin: 2rem auto;
-            /* Centering the game container */
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             max-width: fit-content;
-            /* Allow content to dictate width */
             display: flex;
-            /* Use flexbox for inner centering */
             flex-direction: column;
             align-items: center;
-            /* Center items horizontally */
         }
 
         .game-header {
@@ -198,7 +193,6 @@
             align-items: center;
             margin-bottom: 2rem;
             width: 100%;
-            /* Ensure header spans full width */
         }
 
         .back-btn {
@@ -298,9 +292,7 @@
             background: #000;
             border: 2px solid #333;
             display: block;
-            /* Ensure canvas is a block element for margin:auto to work */
             margin: 0 auto;
-            /* Center the snake game canvas */
         }
 
         .memory-grid {
@@ -316,16 +308,13 @@
             cursor: pointer;
             transform: rotateY(0deg);
             transition: transform 0.4s ease;
-            /* For flip animation */
             transform-style: preserve-3d;
-            /* For flip animation */
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
             color: white;
             position: relative;
-            /* For inner card content */
         }
 
         .memory-card .card-inner {
@@ -341,15 +330,12 @@
             transform: rotateY(180deg);
         }
 
-
-
         .memory-card .card-front,
         .memory-card .card-back {
             position: absolute;
             width: 100%;
             height: 100%;
             -webkit-backface-visibility: hidden;
-            /* Safari */
             backface-visibility: hidden;
             display: flex;
             align-items: center;
@@ -367,7 +353,6 @@
             color: white;
             transform: rotateY(180deg);
         }
-
 
         .game-info {
             text-align: center;
@@ -413,13 +398,15 @@
             max-width: 400px;
             margin: 0 auto;
         }
-        .keyboard button {
-  padding: 10px;
-  margin: 3px;
-  font-size: 16px;
-  cursor: pointer;
-  touch-action: manipulation; /* Better touch response */
-}
+
+        #hangman-alphabet button {
+            padding: 10px;
+            margin: 3px;
+            font-size: 16px;
+            cursor: pointer;
+            touch-action: manipulation;
+            min-width: 30px;
+        }
 
         .letter-btn {
             padding: 10px;
@@ -478,9 +465,7 @@
             padding: 5px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             justify-content: center;
-            /* Center the grid itself */
             margin: 0 auto;
-            /* Center the grid container */
             max-width: fit-content;
         }
 
@@ -579,10 +564,51 @@
             border: 2px solid #333;
         }
 
+        /* Mobile Controls for Snake Game */
+        .mobile-controls {
+            display: none;
+            justify-content: center;
+            margin-top: 10px;
+            gap: 5px;
+        }
+
+        .arrow-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Mobile Menu Styles */
+        .mobile-menu.open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .mobile-menu.open span:nth-child(2) {
+            opacity: 0;
+        }
+        .mobile-menu.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
 
         @media (max-width: 768px) {
             .nav-links {
-                display: none;
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: rgba(0, 0, 0, 0.9);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.5s ease;
+            }
+            .nav-links.active {
+                left: 0;
             }
 
             .mobile-menu {
@@ -600,31 +626,11 @@
             .game-card {
                 padding: 1.5rem;
             }
-            /* Mobile Controls for Snake Game */
-.mobile-controls {
-    display: none; /* Hidden by default (shows only on mobile) */
-    justify-content: center;
-    margin-top: 10px;
-    gap: 5px;
-}
 
-.arrow-btn {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-    background: #333;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-/* Show on mobile screens */
-@media (max-width: 768px) {
-    .mobile-controls {
-        display: flex;
-    }
-}
+            .mobile-controls {
+                display: flex;
+            }
+        }
     </style>
 </head>
 
@@ -809,14 +815,25 @@
             document.getElementById(sectionId).classList.add('active');
         }
 
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+            this.classList.toggle('open');
+        });
+
         // Game Management
         let currentGame = null;
         let gameState = {};
 
         function startGame(gameId) {
+            // Clean up any existing game state
+            if (currentGame && gameState[currentGame] && gameState[currentGame].intervalId) {
+                clearInterval(gameState[currentGame].intervalId);
+            }
             currentGame = gameId;
             showSection('game-play');
             loadGame(gameId);
+            resizeCanvases();
         }
 
         function loadGame(gameId) {
@@ -870,6 +887,30 @@
                 game.content();
             }
         }
+
+        // Responsive canvas sizing
+        function resizeCanvases() {
+            const canvases = document.querySelectorAll('canvas');
+            canvases.forEach(canvas => {
+                const container = canvas.parentElement;
+                const width = Math.min(container.clientWidth - 40, 400);
+                canvas.width = width;
+                if (canvas.id === 'snake-canvas') {
+                    canvas.height = width; // Square aspect for snake
+                } else if (canvas.id === 'breakout-canvas') {
+                    canvas.height = Math.floor(width * 0.66); // 3:2 aspect for breakout
+                }
+                
+                // Redraw if game is running
+                if (currentGame === 'snake' && gameState.snake && gameState.snake.running) {
+                    drawSnake();
+                } else if (currentGame === 'breakout' && breakoutGame) {
+                    breakoutGame.draw();
+                }
+            });
+        }
+
+        window.addEventListener('resize', resizeCanvases);
 
         // Tic Tac Toe
         function createTicTacToe() {
@@ -943,15 +984,15 @@
             const html = `
                     <div class="game-info">
                         <p>Score: <span id="snake-score">0</span></p>
-                        <p>Use arrow keys to move</p>
+                        <p>Use arrow keys or buttons to move</p>
                     </div>
                     <canvas id="snake-canvas" class="snake-game" width="400" height="400"></canvas>
                     <div class="mobile-controls">
-  <button class="arrow-btn" id="up">↑</button>
-  <button class="arrow-btn" id="left">←</button>
-  <button class="arrow-btn" id="down">↓</button>
-  <button class="arrow-btn" id="right">→</button>
-</div>
+                        <button class="arrow-btn" id="up">↑</button>
+                        <button class="arrow-btn" id="left">←</button>
+                        <button class="arrow-btn" id="down">↓</button>
+                        <button class="arrow-btn" id="right">→</button>
+                    </div>
                     <div class="game-controls">
                         <button onclick="startSnake()">Start Game</button>
                         <button onclick="resetSnake()">Reset</button>
@@ -971,8 +1012,8 @@
                 food: { x: 15, y: 15 },
                 score: 0,
                 running: false,
-                intervalId: null, // To store the interval for stopping/resetting
-                speed: 100 // Increased speed (lower value = faster)
+                intervalId: null,
+                speed: 100
             };
             drawSnake();
         }
@@ -994,7 +1035,7 @@
             if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 ||
                 state.snake.some(segment => segment.x === head.x && segment.y === head.y)) {
                 state.running = false;
-                clearInterval(state.intervalId); // Stop the game loop
+                clearInterval(state.intervalId);
                 alert('Game Over! Score: ' + state.score);
                 return;
             }
@@ -1044,7 +1085,7 @@
 
         // Snake controls
         document.addEventListener('keydown', (e) => {
-            if (currentGame !== 'snake' || !gameState.snake.running) return;
+            if (currentGame !== 'snake' || !gameState.snake || !gameState.snake.running) return;
 
             const state = gameState.snake;
             switch (e.key) {
@@ -1054,28 +1095,28 @@
                 case 'ArrowRight': if (state.dx === 0) { state.dx = 1; state.dy = 0; } break;
             }
         });
-            function handleTouch(dir) {
-  return (e) => {
-    e.preventDefault();
-    if ((dir === 'UP' && direction !== 'DOWN') ||
-        (dir === 'DOWN' && direction !== 'UP') ||
-        (dir === 'LEFT' && direction !== 'RIGHT') ||
-        (dir === 'RIGHT' && direction !== 'LEFT')) {
-      direction = dir;
-    }
-  };
-}
 
-// Add event listeners to all arrow buttons
-['up', 'left', 'down', 'right'].forEach(id => {
-  const btn = document.getElementById(id);
-  if (btn) {
-    btn.addEventListener('touchstart', handleTouch(id.toUpperCase()));
-    // Optional: Add visual feedback on touch
-    btn.addEventListener('touchstart', () => btn.style.opacity = '0.7');
-    btn.addEventListener('touchend', () => btn.style.opacity = '1');
-  }
-});
+        // Mobile controls for Snake
+        ['up', 'left', 'down', 'right'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) {
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    if (!gameState.snake || !gameState.snake.running) return;
+                    
+                    const state = gameState.snake;
+                    switch(id) {
+                        case 'up': if (state.dy === 0) { state.dx = 0; state.dy = -1; } break;
+                        case 'down': if (state.dy === 0) { state.dx = 0; state.dy = 1; } break;
+                        case 'left': if (state.dx === 0) { state.dx = -1; state.dy = 0; } break;
+                        case 'right': if (state.dx === 0) { state.dx = 1; state.dy = 0; } break;
+                    }
+                    btn.style.opacity = '0.7';
+                });
+                btn.addEventListener('touchend', () => btn.style.opacity = '1');
+            }
+        });
+
         // Memory Game
         function createMemoryGame() {
             const symbols = ['🌟', '🎈', '🎨', '🎭', '🎪', '🎯', '🎲', '🎸'];
@@ -1086,7 +1127,7 @@
                 flipped: [],
                 matched: [],
                 moves: 0,
-                lockBoard: false // To prevent flipping more than two cards
+                lockBoard: false
             };
 
             const html = `
@@ -1122,7 +1163,7 @@
             if (state.flipped.length === 2) {
                 state.moves++;
                 document.getElementById('memory-moves').textContent = state.moves;
-                state.lockBoard = true; // Lock the board
+                state.lockBoard = true;
 
                 setTimeout(() => {
                     const [firstIndex, secondIndex] = state.flipped;
@@ -1130,7 +1171,6 @@
                     const secondCardSymbol = state.cards[secondIndex];
 
                     if (firstCardSymbol === secondCardSymbol) {
-                        // Match found
                         state.matched.push(firstIndex, secondIndex);
                         document.querySelector(`[data-index="${firstIndex}"]`).style.pointerEvents = 'none';
                         document.querySelector(`[data-index="${secondIndex}"]`).style.pointerEvents = 'none';
@@ -1139,13 +1179,12 @@
                             alert(`Congratulations! You won in ${state.moves} moves!`);
                         }
                     } else {
-                        // No match, flip back
                         document.querySelector(`[data-index="${firstIndex}"]`).classList.remove('flipped');
                         document.querySelector(`[data-index="${secondIndex}"]`).classList.remove('flipped');
                     }
                     state.flipped = [];
-                    state.lockBoard = false; // Unlock the board
-                }, 1000); // 1 second to see the cards
+                    state.lockBoard = false;
+                }, 1000);
             }
         }
 
@@ -1277,7 +1316,7 @@
             const mole = hole.querySelector('.mole');
 
             mole.classList.add('active');
-            const time = randomTime(500, 1500); // Moles appear for 0.5 to 1.5 seconds
+            const time = randomTime(500, 1500);
 
             moleTimeout = setTimeout(() => {
                 mole.classList.remove('active');
@@ -1293,27 +1332,27 @@
             document.getElementById('whack-score').textContent = '0';
             document.getElementById('whack-status').textContent = 'Whack the moles!';
 
-            clearTimeout(moleTimeout); // Clear any existing timeouts
-            peep(); // Start the first mole
+            clearTimeout(moleTimeout);
+            peep();
 
             setTimeout(() => {
                 gameState.whack.timeUp = true;
                 document.getElementById('whack-status').textContent = `Game Over! Your score: ${gameState.whack.score}`;
-            }, 15000); // Game lasts for 15 seconds
+            }, 15000);
         }
 
         function whackMole(e) {
             if (!e.isTrusted || !e.target.classList.contains('mole')) return;
             if (gameState.whack.timeUp) return;
 
-            e.target.classList.remove('active'); // Hide the mole immediately
+            e.target.classList.remove('active');
             gameState.whack.score++;
             document.getElementById('whack-score').textContent = gameState.whack.score;
         }
 
         function resetWhack() {
             clearTimeout(moleTimeout);
-            gameState.whack.timeUp = true; // Ensure the game loop stops
+            gameState.whack.timeUp = true;
             gameState.whack.score = 0;
             document.getElementById('whack-score').textContent = '0';
             document.getElementById('whack-status').textContent = '';
@@ -1323,7 +1362,7 @@
         // Number Guessing
         function createNumberGame() {
             gameState.number = {
-                secretNumber: Math.floor(Math.random() * 9) + 1, // Number between 1 and 9
+                secretNumber: Math.floor(Math.random() * 9) + 1,
                 attempts: 0,
                 gameOver: false
             };
@@ -1497,7 +1536,7 @@
         function createSliderGame() {
             gameState.slider = {
                 board: [],
-                size: 3, // 3x3 puzzle
+                size: 3,
                 emptyTileIndex: 0
             };
             const html = `
@@ -1517,9 +1556,8 @@
         function initSliderGame() {
             const state = gameState.slider;
             const numbers = Array.from({ length: state.size * state.size - 1 }, (_, i) => i + 1);
-            numbers.push(''); // Empty tile
+            numbers.push('');
 
-            // Shuffle the array until it's solvable
             let shuffledNumbers;
             do {
                 shuffledNumbers = numbers.sort(() => Math.random() - 0.5);
@@ -1552,13 +1590,13 @@
 
         function isSolvable(arr, size) {
             const inversions = getInversions(arr.filter(val => val !== ''));
-            if (size % 2 === 1) { // Odd grid size
+            if (size % 2 === 1) {
                 return inversions % 2 === 0;
-            } else { // Even grid size
+            } else {
                 const emptyRowFromBottom = size - getEmptyRow(arr, size);
-                if (emptyRowFromBottom % 2 === 1) { // Empty tile on odd row from bottom
+                if (emptyRowFromBottom % 2 === 1) {
                     return inversions % 2 === 0;
-                } else { // Empty tile on even row from bottom
+                } else {
                     return inversions % 2 === 1;
                 }
             }
@@ -1595,7 +1633,6 @@
                 (Math.abs(col - emptyCol) === 1 && row === emptyRow);
 
             if (isAdjacent) {
-                // Swap tiles
                 [board[index], board[emptyIndex]] = [board[emptyIndex], board[index]];
                 state.emptyTileIndex = index;
                 state.moves++;
@@ -1603,7 +1640,6 @@
                 renderSliderBoard();
                 if (checkSliderWin()) {
                     document.getElementById('slider-status').textContent = `You solved it in ${state.moves} moves! 🎉`;
-                    // Disable clicks after winning
                     document.querySelectorAll('.slider-tile').forEach(tile => tile.onclick = null);
                 }
             }
@@ -1624,14 +1660,14 @@
         }
 
         // Breakout Game
-        let breakoutGame; // To hold the instance of the Breakout game
+        let breakoutGame;
 
         function createBreakoutGame() {
             const html = `
                     <div class="game-info">
                         <p>Score: <span id="breakout-score">0</span></p>
                         <p>Lives: <span id="breakout-lives">3</span></p>
-                        <p id="breakout-status">Use arrow keys to move the paddle!</p>
+                        <p id="breakout-status">Use touch or mouse to move the paddle!</p>
                     </div>
                     <canvas id="breakout-canvas" class="breakout-canvas" width="480" height="320"></canvas>
                     <div class="game-controls">
@@ -1647,6 +1683,7 @@
             const canvas = document.getElementById("breakout-canvas");
             const ctx = canvas.getContext("2d");
             
+            canvas.style.touchAction = 'none'; // Prevent browser touch gestures
 
             // Game variables
             let paddleHeight = 10;
@@ -1656,8 +1693,8 @@
             let ballRadius = 10;
             let x = canvas.width / 2;
             let y = canvas.height - 30;
-            let dx = 3; // Increased ball speed
-            let dy = -3; // Increased ball speed
+            let dx = 3;
+            let dy = -3;
 
             let brickRowCount = 5;
             let brickColumnCount = 6;
@@ -1678,7 +1715,7 @@
                 }
             }
 
-            // Event Listeners for paddle movement
+            // Event Listeners
             let rightPressed = false;
             let leftPressed = false;
 
@@ -1703,6 +1740,19 @@
                 }
             }
 
+            function movePaddle(e) {
+                const relativeX = e.clientX - canvas.offsetLeft;
+                paddleX = Math.max(0, Math.min(relativeX - paddleWidth/2, canvas.width - paddleWidth));
+            }
+
+            canvas.addEventListener('mousemove', movePaddle);
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const touchX = e.touches[0].clientX - rect.left;
+                paddleX = Math.max(0, Math.min(touchX - paddleWidth/2, canvas.width - paddleWidth));
+            }, { passive: false });
+
             function collisionDetection() {
                 for (let c = 0; c < brickColumnCount; c++) {
                     for (let r = 0; r < brickRowCount; r++) {
@@ -1710,12 +1760,12 @@
                         if (b.status === 1) {
                             if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
                                 dy = -dy;
-                                b.status = 0; // Brick is broken
+                                b.status = 0;
                                 score++;
                                 document.getElementById('breakout-score').textContent = score;
                                 if (score === brickRowCount * brickColumnCount) {
                                     document.getElementById('breakout-status').textContent = "YOU WIN, CONGRATULATIONS!";
-                                    clearInterval(breakoutGame.intervalId); // Stop the game
+                                    clearInterval(breakoutGame.intervalId);
                                 }
                             }
                         }
@@ -1749,7 +1799,7 @@
                             bricks[c][r].y = brickY;
                             ctx.beginPath();
                             ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                            ctx.fillStyle = "#FF5733"; // Brick color
+                            ctx.fillStyle = "#FF5733";
                             ctx.fill();
                             ctx.closePath();
                         }
@@ -1758,13 +1808,12 @@
             }
 
             function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 drawBricks();
                 drawBall();
                 drawPaddle();
                 collisionDetection();
 
-                // Ball movement logic
                 if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
                     dx = -dx;
                 }
@@ -1773,26 +1822,23 @@
                 } else if (y + dy > canvas.height - ballRadius - paddleHeight) {
                     if (x > paddleX && x < paddleX + paddleWidth) {
                         dy = -dy;
-                        // Add some dynamic to ball movement based on where it hits the paddle
                         dx = 8 * ((x - (paddleX + paddleWidth / 2)) / paddleWidth);
-                    } else if (y + dy > canvas.height - ballRadius) { // Ball hits the bottom wall
+                    } else if (y + dy > canvas.height - ballRadius) {
                         lives--;
                         document.getElementById('breakout-lives').textContent = lives;
                         if (!lives) {
                             document.getElementById('breakout-status').textContent = "GAME OVER!";
-                            clearInterval(breakoutGame.intervalId); // Stop the game
+                            clearInterval(breakoutGame.intervalId);
                         } else {
-                            // Reset ball and paddle
                             x = canvas.width / 2;
                             y = canvas.height - 30;
-                            dx = 3; // Reset speed
-                            dy = -3; // Reset speed
+                            dx = 3;
+                            dy = -3;
                             paddleX = (canvas.width - paddleWidth) / 2;
                         }
                     }
                 }
 
-                // Paddle movement logic
                 if (rightPressed && paddleX < canvas.width - paddleWidth) {
                     paddleX += 7;
                 } else if (leftPressed && paddleX > 0) {
@@ -1802,14 +1848,7 @@
                 x += dx;
                 y += dy;
             }
-            canvas.addEventListener('mousemove', movePaddle);
-    canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        const touchX = e.touches[0].clientX - canvas.offsetLeft;
-        paddleX = Math.max(0, Math.min(touchX - paddleWidth/2, canvas.width - paddleWidth));
-    }, { passive: false });
 
-            // Store game state in global object
             breakoutGame = {
                 canvas, ctx,
                 paddleHeight, paddleWidth, paddleX,
@@ -1817,11 +1856,10 @@
                 brickRowCount, brickColumnCount, brickWidth, brickHeight, brickPadding, brickOffsetTop, brickOffsetLeft,
                 score, lives, bricks,
                 rightPressed, leftPressed,
-                intervalId: null, // To store the game loop interval
+                intervalId: null,
                 draw,
                 reset: function () {
                     clearInterval(this.intervalId);
-                    // Reset all variables to initial state
                     this.paddleX = (this.canvas.width - this.paddleWidth) / 2;
                     this.x = this.canvas.width / 2;
                     this.y = this.canvas.height - 30;
@@ -1831,7 +1869,7 @@
                     this.lives = 3;
                     document.getElementById('breakout-score').textContent = '0';
                     document.getElementById('breakout-lives').textContent = '3';
-                    document.getElementById('breakout-status').textContent = 'Use arrow keys to move the paddle!';
+                    document.getElementById('breakout-status').textContent = 'Use touch or mouse to move the paddle!';
                     this.bricks = [];
                     for (let c = 0; c < this.brickColumnCount; c++) {
                         this.bricks[c] = [];
@@ -1839,16 +1877,16 @@
                             this.bricks[c][r] = { x: 0, y: 0, status: 1 };
                         }
                     }
-                    this.draw(); // Draw initial state
+                    this.draw();
                 }
             };
-            breakoutGame.draw(); // Initial draw
+            breakoutGame.draw();
         }
 
         function startBreakout() {
             if (breakoutGame && !breakoutGame.intervalId) {
                 document.getElementById('breakout-status').textContent = 'Game started!';
-                breakoutGame.intervalId = setInterval(breakoutGame.draw, 10); // Faster game loop (lower value = faster)
+                breakoutGame.intervalId = setInterval(breakoutGame.draw, 10);
             }
         }
 
@@ -1857,7 +1895,6 @@
                 breakoutGame.reset();
             }
         }
-
 
         // Quiz Game
         const quizQuestions = [
@@ -1905,7 +1942,7 @@
                 document.getElementById('quiz-question-container').textContent = `Quiz finished! Your final score: ${state.score} / ${quizQuestions.length}`;
                 document.getElementById('quiz-options-container').innerHTML = '';
                 document.getElementById('quiz-status').textContent = 'Game Over!';
-                document.querySelector('#game-content .game-controls button:first-of-type').disabled = true; // Disable "Next Question"
+                document.querySelector('#game-content .game-controls button:first-of-type').disabled = true;
                 return;
             }
 
@@ -1921,7 +1958,7 @@
                 button.onclick = () => checkQuizAnswer(option);
                 optionsContainer.appendChild(button);
             });
-            document.getElementById('quiz-status').textContent = ''; // Clear previous status
+            document.getElementById('quiz-status').textContent = '';
         }
 
         function checkQuizAnswer(selectedOption) {
@@ -1929,7 +1966,6 @@
             const correctAnswer = quizQuestions[state.currentQuestionIndex].answer;
             const statusElement = document.getElementById('quiz-status');
 
-            // Disable all options after selection
             document.querySelectorAll('.quiz-option').forEach(button => button.disabled = true);
 
             if (selectedOption === correctAnswer) {
@@ -1946,8 +1982,8 @@
         function nextQuizQuestion() {
             gameState.quiz.currentQuestionIndex++;
             loadQuizQuestion();
-            document.querySelectorAll('.quiz-option').forEach(button => button.disabled = false); // Re-enable options for next question
-            document.getElementById('quiz-status').style.color = ''; // Reset color
+            document.querySelectorAll('.quiz-option').forEach(button => button.disabled = false);
+            document.getElementById('quiz-status').style.color = '';
         }
 
         function resetQuiz() {
@@ -1959,7 +1995,6 @@
             document.querySelector('#game-content .game-controls button:first-of-type').disabled = false;
             loadQuizQuestion();
         }
-
 
         // Contact Form
         function submitForm(event) {
