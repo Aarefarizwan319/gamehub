@@ -1892,6 +1892,8 @@ function resetHangman() {
 // Breakout Game Implementation
 let breakoutGame;
 
+let breakoutGame;
+
 function createBreakoutGame() {
     const html = `
         <div class="game-info">
@@ -1907,6 +1909,21 @@ function createBreakoutGame() {
     `;
     document.getElementById('game-content').innerHTML = html;
     initBreakout();
+}
+
+// Add these functions to global scope
+function startBreakout() {
+    if (breakoutGame && !breakoutGame.state.running) {
+        breakoutGame.state.running = true;
+        document.getElementById("breakout-status").textContent = "Game started!";
+        requestAnimationFrame(breakoutGame.draw);
+    }
+}
+
+function resetBreakout() {
+    if (breakoutGame) {
+        breakoutGame.reset();
+    }
 }
 function initBreakout() {
     const canvas = document.getElementById("breakout-canvas");
