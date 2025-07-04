@@ -298,13 +298,7 @@
         #snake-down { grid-area: down; }
 
         /* Breakout Game Specific Controls */
-        #breakout-controls {
-            grid-template-columns: 1fr 1fr;
-            grid-template-areas: "left right";
-        }
-
-        #breakout-left { grid-area: left; }
-        #breakout-right { grid-area: right; }
+       
 
         /* Responsive Canvas */
         canvas {
@@ -331,6 +325,15 @@
             border: 2px solid #333;
             touch-action: none;
         }
+        #breakout-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 480px;   /* Match canvas width */
+    margin-top: 10px;
+}
+
 
         /* About and Contact Sections */
         .content-section {
@@ -714,13 +717,7 @@
                 max-height: 400px;
             }
 
-            #breakout-canvas {
-                width: 100%;
-                height: auto;
-                max-width: 480px;
-                max-height: 320px;
-            }
-
+          
             /* Adjust game header layout */
             .game-header {
                 flex-direction: column;
@@ -1902,7 +1899,7 @@ function createBreakoutGame() {
         <div class="game-info">
             <p>Score: <span id="breakout-score">0</span></p>
             <p>Lives: <span id="breakout-lives">3</span></p>
-            <p id="breakout-status">Press Start or use arrow keys/touch</p>
+            <p id="breakout-status">Press Start to play</p>
         </div>
         <canvas id="breakout-canvas" class="breakout-canvas" width="480" height="320"></canvas>
         <div class="game-controls">
