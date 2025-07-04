@@ -413,6 +413,13 @@
             max-width: 400px;
             margin: 0 auto;
         }
+        .keyboard button {
+  padding: 10px;
+  margin: 3px;
+  font-size: 16px;
+  cursor: pointer;
+  touch-action: manipulation; /* Better touch response */
+}
 
         .letter-btn {
             padding: 10px;
@@ -593,6 +600,31 @@
             .game-card {
                 padding: 1.5rem;
             }
+            /* Mobile Controls for Snake Game */
+.mobile-controls {
+    display: none; /* Hidden by default (shows only on mobile) */
+    justify-content: center;
+    margin-top: 10px;
+    gap: 5px;
+}
+
+.arrow-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Show on mobile screens */
+@media (max-width: 768px) {
+    .mobile-controls {
+        display: flex;
+    }
+}
     </style>
 </head>
 
@@ -914,6 +946,12 @@
                         <p>Use arrow keys to move</p>
                     </div>
                     <canvas id="snake-canvas" class="snake-game" width="400" height="400"></canvas>
+                    <div class="mobile-controls">
+  <button class="arrow-btn" id="up">↑</button>
+  <button class="arrow-btn" id="left">←</button>
+  <button class="arrow-btn" id="down">↓</button>
+  <button class="arrow-btn" id="right">→</button>
+</div>
                     <div class="game-controls">
                         <button onclick="startSnake()">Start Game</button>
                         <button onclick="resetSnake()">Reset</button>
@@ -1016,7 +1054,28 @@
                 case 'ArrowRight': if (state.dx === 0) { state.dx = 1; state.dy = 0; } break;
             }
         });
+            function handleTouch(dir) {
+  return (e) => {
+    e.preventDefault();
+    if ((dir === 'UP' && direction !== 'DOWN') ||
+        (dir === 'DOWN' && direction !== 'UP') ||
+        (dir === 'LEFT' && direction !== 'RIGHT') ||
+        (dir === 'RIGHT' && direction !== 'LEFT')) {
+      direction = dir;
+    }
+  };
+}
 
+// Add event listeners to all arrow buttons
+['up', 'left', 'down', 'right'].forEach(id => {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('touchstart', handleTouch(id.toUpperCase()));
+    // Optional: Add visual feedback on touch
+    btn.addEventListener('touchstart', () => btn.style.opacity = '0.7');
+    btn.addEventListener('touchend', () => btn.style.opacity = '1');
+  }
+});
         // Memory Game
         function createMemoryGame() {
             const symbols = ['🌟', '🎈', '🎨', '🎭', '🎪', '🎯', '🎲', '🎸'];
@@ -1587,6 +1646,7 @@
         function initBreakout() {
             const canvas = document.getElementById("breakout-canvas");
             const ctx = canvas.getContext("2d");
+            
 
             // Game variables
             let paddleHeight = 10;
@@ -1742,6 +1802,12 @@
                 x += dx;
                 y += dy;
             }
+            canvas.addEventListener('mousemove', movePaddle);
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touchX = e.touches[0].clientX - canvas.offsetLeft;
+        paddleX = Math.max(0, Math.min(touchX - paddleWidth/2, canvas.width - paddleWidth));
+    }, { passive: false });
 
             // Store game state in global object
             breakoutGame = {
