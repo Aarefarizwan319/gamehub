@@ -1906,7 +1906,11 @@ function createBreakoutGame() {
             <button onclick="startBreakout()">Start Game</button>
             <button onclick="resetBreakout()">Reset Game</button>
         </div>
-        
+        <div class="mobile-controls">
+            <button ontouchstart="movePaddle('left')" ontouchend="stopPaddle()">←</button>
+            <button ontouchstart="movePaddle('right')" ontouchend="stopPaddle()">→</button>
+        </div>
+    `;
     document.getElementById('game-content').innerHTML = html;
     initBreakout();
 }
