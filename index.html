@@ -1902,14 +1902,6 @@ function createBreakoutGame() {
             <p id="breakout-status">Press Start or use arrow keys/touch</p>
         </div>
         <canvas id="breakout-canvas" class="breakout-canvas" width="480" height="320"></canvas>
-        <div class="game-controls">
-            <button onclick="startBreakout()">Start Game</button>
-            <button onclick="resetBreakout()">Reset Game</button>
-        </div>
-        <div class="mobile-controls">
-            <button ontouchstart="movePaddle('left')" ontouchend="stopPaddle()">←</button>
-            <button ontouchstart="movePaddle('right')" ontouchend="stopPaddle()">→</button>
-        </div>
     `;
     document.getElementById('game-content').innerHTML = html;
     initBreakout();
@@ -1968,6 +1960,13 @@ function initBreakout() {
             state.rightPressed = true;
         } else if (e.key === "Left" || e.key === "ArrowLeft") {
             state.leftPressed = true;
+        } else if (e.key === " " || e.key === "Enter") {
+            // Start game with spacebar or enter
+            if (!state.running) {
+                state.running = true;
+                document.getElementById("breakout-status").textContent = "Game started!";
+                requestAnimationFrame(draw);
+            }
         }
     }
 
@@ -1991,9 +1990,19 @@ function initBreakout() {
         }
     }
 
+    function touchStartHandler(e) {
+        // Start game on touch if not running
+        if (!state.running) {
+            state.running = true;
+            document.getElementById("breakout-status").textContent = "Game started!";
+            requestAnimationFrame(draw);
+        }
+    }
+
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
     canvas.addEventListener("touchmove", touchMoveHandler, {passive: false});
+    canvas.addEventListener("touchstart", touchStartHandler, {passive: true});
 
     // Drawing functions
     function drawPaddle() {
@@ -2175,6 +2184,7 @@ function initBreakout() {
             document.removeEventListener("keydown", keyDownHandler);
             document.removeEventListener("keyup", keyUpHandler);
             this.canvas.removeEventListener("touchmove", touchMoveHandler);
+            this.canvas.removeEventListener("touchstart", touchStartHandler);
         }
     };
 
@@ -2182,7 +2192,7 @@ function initBreakout() {
     breakoutGame.reset();
 }
 
-// Global control functions
+// Global control functions (kept for compatibility)
 function startBreakout() {
     if (breakoutGame && !breakoutGame.state.running) {
         breakoutGame.state.running = true;
