@@ -1909,10 +1909,7 @@ function createBreakoutGame() {
             <button onclick="startBreakout()">Start Game</button>
             <button onclick="resetBreakout()">Reset Game</button>
         </div>
-        <div class="mobile-controls">
-            <!-- Removed the arrow buttons -->
-        </div>
-    `;
+       
     document.getElementById('game-content').innerHTML = html;
     initBreakout();
 }
@@ -2199,24 +2196,6 @@ function resetBreakout() {
     }
 }
 
-function movePaddle(direction) {
-    if (breakoutGame) {
-        if (direction === 'left') {
-            breakoutGame.state.leftPressed = true;
-            breakoutGame.state.rightPressed = false;
-        } else {
-            breakoutGame.state.rightPressed = true;
-            breakoutGame.state.leftPressed = false;
-        }
-    }
-}
-
-function stopPaddle() {
-    if (breakoutGame) {
-        breakoutGame.state.leftPressed = false;
-        breakoutGame.state.rightPressed = false;
-    }
-}
         // Quiz Game
         const quizQuestions = [
             {
