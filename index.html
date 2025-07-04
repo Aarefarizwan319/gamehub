@@ -1890,8 +1890,8 @@ function resetHangman() {
         // Breakout Game
         // Breakout Game
 // Breakout Game Implementation
-let breakoutGame;
 
+// Breakout Game - Complete Implementation
 let breakoutGame;
 
 function createBreakoutGame() {
@@ -1906,25 +1906,15 @@ function createBreakoutGame() {
             <button onclick="startBreakout()">Start Game</button>
             <button onclick="resetBreakout()">Reset Game</button>
         </div>
+        <div class="mobile-controls">
+            <button ontouchstart="movePaddle('left')" ontouchend="stopPaddle()">←</button>
+            <button ontouchstart="movePaddle('right')" ontouchend="stopPaddle()">→</button>
+        </div>
     `;
     document.getElementById('game-content').innerHTML = html;
     initBreakout();
 }
 
-// Add these functions to global scope
-function startBreakout() {
-    if (breakoutGame && !breakoutGame.state.running) {
-        breakoutGame.state.running = true;
-        document.getElementById("breakout-status").textContent = "Game started!";
-        requestAnimationFrame(breakoutGame.draw);
-    }
-}
-
-function resetBreakout() {
-    if (breakoutGame) {
-        breakoutGame.reset();
-    }
-}
 function initBreakout() {
     const canvas = document.getElementById("breakout-canvas");
     const ctx = canvas.getContext("2d");
@@ -1989,23 +1979,21 @@ function initBreakout() {
         }
     }
 
-    function movePaddle(direction) {
-        if (direction === 'left') {
-            state.leftPressed = true;
-            state.rightPressed = false;
-        } else {
-            state.rightPressed = true;
-            state.leftPressed = false;
+    // Touch event handlers
+    function touchMoveHandler(e) {
+        const relativeX = e.touches[0].clientX - canvas.offsetLeft;
+        state.paddle.x = relativeX - state.paddle.width/2;
+        
+        // Keep paddle within canvas
+        if(state.paddle.x < 0) state.paddle.x = 0;
+        if(state.paddle.x > canvas.width - state.paddle.width) {
+            state.paddle.x = canvas.width - state.paddle.width;
         }
-    }
-
-    function stopPaddle() {
-        state.leftPressed = false;
-        state.rightPressed = false;
     }
 
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
+    canvas.addEventListener("touchmove", touchMoveHandler, {passive: false});
 
     // Drawing functions
     function drawPaddle() {
@@ -2113,14 +2101,6 @@ function initBreakout() {
                 const speed = Math.sqrt(state.ball.speedX*state.ball.speedX + state.ball.speedY*state.ball.speedY);
                 state.ball.speedX = speed * Math.sin(angle);
                 state.ball.speedY = -Math.abs(speed * Math.cos(angle));
-                
-                // Ensure minimum speed
-                const currentSpeed = Math.sqrt(state.ball.speedX*state.ball.speedX + state.ball.speedY*state.ball.speedY);
-                if (currentSpeed < state.ball.minSpeed) {
-                    const ratio = state.ball.minSpeed / currentSpeed;
-                    state.ball.speedX *= ratio;
-                    state.ball.speedY *= ratio;
-                }
             } else {
                 state.lives--;
                 document.getElementById("breakout-lives").textContent = state.lives;
@@ -2140,7 +2120,7 @@ function initBreakout() {
             }
         }
 
-        // Paddle movement
+        // Paddle movement (keyboard)
         if (state.rightPressed && state.paddle.x < canvas.width - state.paddle.width) {
             state.paddle.x += state.paddle.speed;
         } else if (state.leftPressed && state.paddle.x > 0) {
@@ -2194,6 +2174,7 @@ function initBreakout() {
             // Remove event listeners
             document.removeEventListener("keydown", keyDownHandler);
             document.removeEventListener("keyup", keyUpHandler);
+            this.canvas.removeEventListener("touchmove", touchMoveHandler);
         }
     };
 
@@ -2201,11 +2182,12 @@ function initBreakout() {
     breakoutGame.reset();
 }
 
+// Global control functions
 function startBreakout() {
     if (breakoutGame && !breakoutGame.state.running) {
         breakoutGame.state.running = true;
         document.getElementById("breakout-status").textContent = "Game started!";
-        breakoutGame.draw();
+        requestAnimationFrame(breakoutGame.draw);
     }
 }
 
