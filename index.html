@@ -1904,15 +1904,10 @@ function createBreakoutGame() {
             <button onclick="startBreakout()">Start Game</button>
             <button onclick="resetBreakout()">Reset Game</button>
         </div>
-        <div class="mobile-controls" id="breakout-controls">
-            <button class="mobile-control-btn" ontouchstart="movePaddle('left')" ontouchend="stopPaddle()">←</button>
-            <button class="mobile-control-btn" ontouchstart="movePaddle('right')" ontouchend="stopPaddle()">→</button>
-        </div>
     `;
     document.getElementById('game-content').innerHTML = html;
     initBreakout();
 }
-
 function initBreakout() {
     const canvas = document.getElementById("breakout-canvas");
     const ctx = canvas.getContext("2d");
