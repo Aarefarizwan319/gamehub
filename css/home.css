@@ -1,0 +1,118 @@
+#star-bg {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: transparent;
+  position: relative;
+  z-index: 2;
+}
+.logo {
+  font-family: 'Bangers', var(--font-comic);
+  font-size: 2rem;
+  letter-spacing: 2px;
+  color: #fffde7;
+  text-shadow: 0 2px 8px var(--color-primary);
+}
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.nav-links li a {
+  font-size: 1.1rem;
+  color: #fffde7;
+  padding: 0.5em 1em;
+  border-radius: 12px;
+  transition: background 0.2s, color 0.2s;
+}
+.nav-links li a:hover {
+  background: var(--color-accent);
+  color: white;
+}
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+.hamburger span {
+  width: 28px;
+  height: 4px;
+  background: #fffde7;
+  border-radius: 2px;
+  display: block;
+}
+
+.home-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  z-index: 1;
+  position: relative;
+}
+.welcome-section {
+  background: var(--color-light);
+  border-radius: 32px;
+  box-shadow: 0 8px 32px var(--color-shadow);
+  padding: 3rem 2rem;
+  margin-top: 3rem;
+  text-align: center;
+  max-width: 480px;
+  z-index: 2;
+}
+.welcome-section h1 {
+  font-family: 'Fredericka the Great', var(--font-comic);
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+.quote {
+  font-size: 1.2rem;
+  color: var(--color-primary);
+  margin: 1.5rem 0 0.5rem 0;
+  font-style: italic;
+  min-height: 2.5em;
+}
+
+@media (max-width: 900px) {
+  .welcome-section {
+    margin-top: 2rem;
+    padding: 2rem 1rem;
+    max-width: 95vw;
+  }
+  .navbar {
+    padding: 1rem 1rem;
+  }
+}
+@media (max-width: 700px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: var(--color-primary);
+    flex-direction: column;
+    width: 180px;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 8px 24px var(--color-shadow);
+    z-index: 10;
+  }
+  .nav-links.open {
+    display: flex;
+  }
+  .hamburger {
+    display: flex;
+  }
+}
