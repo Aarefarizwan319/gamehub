@@ -1,0 +1,83 @@
+:root {
+  --color-bg: #f8f6ff;
+  --color-primary: #7c4dff;
+  --color-secondary: #00bcd4;
+  --color-accent: #ff80ab;
+  --color-dark: #22223b;
+  --color-light: #fff1fa;
+  --color-shadow: rgba(124,77,255,0.15);
+  --font-comic: 'Comic Neue', 'Bangers', 'Fredericka the Great', cursive, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-dark);
+  font-family: var(--font-comic);
+  min-height: 100vh;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header, footer {
+  width: 100%;
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 2px 8px var(--color-shadow);
+  border-radius: 0 0 24px 24px;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 1rem;
+  margin-top: auto;
+}
+
+a {
+  color: var(--color-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: var(--color-accent);
+}
+
+button, .cta-btn {
+  font-family: var(--font-comic);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 0.75em 2em;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 16px var(--color-shadow);
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+button:hover, .cta-btn:hover {
+  transform: scale(1.05) rotate(-2deg);
+  box-shadow: 0 8px 24px var(--color-shadow);
+}
+
+.magical {
+  color: var(--color-accent);
+  text-shadow: 0 0 8px var(--color-primary), 0 2px 2px var(--color-shadow);
+}
+
+@media (max-width: 600px) {
+  html {
+    font-size: 15px;
+  }
+  header, footer {
+    border-radius: 0 0 16px 16px;
+  }
+}
